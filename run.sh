@@ -55,7 +55,7 @@ rotate() {
 			mv $BACKUP_BASE_DIR/$BACKUP/$i $BACKUP_BASE_DIR/$BACKUP/$NEXT
 		fi
 	done
-	mkdir $BACKUP_BASE_DIR/$BACKUP/1
+	mkdir -p $BACKUP_BASE_DIR/$BACKUP/1
 }
 
 backup() {
@@ -124,43 +124,47 @@ HOURLY_DIR=$BACKUP_BASE_DIR/hourly/1
 
 make_directories
 
-if $RUN_MONTHLY_DIR && test $DAY_OF_MONTH -eq 1 && test $HOUR -eq 0
+if $RUN_MONTHLY && test $DAY_OF_MONTH -eq 1 && test $HOUR -eq 0
 then
 	rotate monthly
 	backup $MONTHLY_DIR
 
 	rotate weekly
-	ln -s $MONTHLY_DIR $WEEKLY_DIR
+	cd $BACKUP_BASE_DIR/weekly
+	ln -s $MONTHLY_DIR 1
 
 	rotate daily
-	ln -s $MONTHLY_DIR $DAILY
+	cd $BACKUP_BASE_DIR/daily
+	ln -s $MONTHLY_DIR 1
 
 	rotate hourly
-	ln -s $MONTHLY_DIR $HOURLY_DIR
+	cd $BACKUP_BASE_DIR/hourly
+	ln -s $MONTHLY_DIR 1
 
-elif $RUN_WEEKLY_DIR && test $DAY_OF_WEEK -eq 1 && test $HOUR -eq 0
+elif $RUN_WEEKLY && test $DAY_OF_WEEK -eq 1 && test $HOUR -eq 0
 then
 	rotate weekly
 	backup $WEEKLY_DIR
 
 	rotate daily
-	ln -s $WEEKLY_DIR $DAILY
+	cd $BACKUP_BASE_DIR/daily
+	ln -s $WEEKLY_DIR 1
 
 	rotate hourly
-	ln -s $WEEKLY_DIR $HOURLY_DIR
+	cd $BACKUP_BASE_DIR/hourly
+	ln -s $WEEKLY_DIR 1
 
 elif $RUN_DAILY && test $HOUR -eq 0
 then
 	rotate daily
 	backup daily
-	ln -s $WEEKLY_DIR $DAILY_DIR
 
 	rotate hourly
-	ln -s $WEEKLY_DIR $HOURLY_DIR
+	cd $BACKUP_BASE_DIR/hourly
+	ln -s $DAILY_DIR 1
 
-elif $RUN_HOURLY_DIR
+elif $RUN_HOURLY
 then
 	rotate hourly
 	backup hourly
-	ln -s $WEEKLY_DIR $HOURLY_DIR
 fi
