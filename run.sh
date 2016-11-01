@@ -44,13 +44,11 @@ rotate() {
 			;;
 	esac
 
-	for i in `seq $COUNT 1`
+	rm -rf $BACKUP_BASE_DIR/$BACKUP/$COUNT
+	for ((i=$COUNT;i>0;i-=1))
 	do
-		if test $i -eq $COUNT
+		if test $i -lt $COUNT
 		then
-			# Delete oldest
-			rm -rf $BACKUP_BASE_DIR/$BACKUP/$i
-		else
 			let "NEXT=$i +1"
 			mv $BACKUP_BASE_DIR/$BACKUP/$i $BACKUP_BASE_DIR/$BACKUP/$NEXT
 		fi
